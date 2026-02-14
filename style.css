@@ -4,43 +4,61 @@ body {
     margin: 0;
     background: #f4f4f4;
     color: #333;
-    overflow: hidden; /* Evita scroll na página inteira, apenas nos painéis */
+    height: 100vh; /* Altura total da tela */
+    display: flex; /* Transforma o corpo em flexbox */
+    flex-direction: column; /* Organiza itens (Header, Container) em coluna vertical */
+    overflow: hidden; /* Evita scroll na página inteira */
 }
 
-.container {
-    display: flex;
-    height: 100vh;
-}
-
-/* --- LADO DO EDITOR (Agora com Flexbox vertical) --- */
-.editor-side {
-    flex: 1;
-    display: flex;
-    flex-direction: column; /* Organiza topo, conteúdo e rodapé verticalmente */
-    border-right: 1px solid #ccc;
-    background: #f9f9f9;
-}
-
-/* Cabeçalho Fixo no Topo */
+/* Cabeçalho Fixo no Topo (Agora fora das colunas) */
 .header-main {
-    padding: 15px 20px;
+    padding: 10px 20px;
     background: #fff;
     border-bottom: 1px solid #ddd;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-shrink: 0; /* Não encolhe */
+    flex-shrink: 0; /* Impede que o cabeçalho seja esmagado */
+    z-index: 20;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
-/* Área de Scroll dos Blocos (O miolo do sanduíche) */
+/* Container Principal (Ocupa o resto do espaço abaixo do cabeçalho) */
+.container {
+    display: flex;
+    flex: 1;
+    width: 100vw;
+    overflow: hidden; /* O scroll é interno, nas colunas */
+}
+
+/* --- CLASSES UTILITÁRIAS DE VISUALIZAÇÃO --- */
+.hidden { display: none !important; }
+
+.full-width {
+    flex: 100% !important;
+    border: none !important;
+    max-width: 100% !important;
+}
+
+/* --- LADO DO EDITOR --- */
+.editor-side {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid #ccc;
+    background: #f9f9f9;
+    transition: flex 0.3s ease; /* Animação suave */
+}
+
+/* Área de Scroll dos Blocos (Miolo do Editor) */
 #input-container {
-flex: 1; /* Ocupa todo o espaço disponível */
-overflow-y: auto; /* Scroll apenas aqui */
+flex: 1;
+overflow-y: auto;
 padding: 20px;
-padding-bottom: 80px; /* Espaço extra para não esconder conteúdo atrás da barra */
+padding-bottom: 80px;
 }
 
-/* Barra de Ferramentas Fixa no Rodapé */
+/* Barra de Ferramentas Fixa no Rodapé do Editor */
 .toolbar {
     padding: 15px 20px;
     background: #fff;
@@ -60,6 +78,7 @@ padding-bottom: 80px; /* Espaço extra para não esconder conteúdo atrás da ba
     padding: 20px;
     overflow-y: auto;
     background: #fff;
+    transition: flex 0.3s ease;
 }
 
 /* --- ESTILOS DE TEXTO --- */
@@ -67,7 +86,35 @@ h2 { margin: 0; color: #444; font-size: 1.5em; }
 .version-tag { font-size: 0.5em; background: #e74c3c; color: white; padding: 2px 5px; border-radius: 3px; vertical-align: middle; }
 .subtitle { font-size: 0.9em; color: #666; margin: 5px 0 0 0; font-style: italic; }
 
-/* --- BOTÕES DA TOOLBAR (Adicionar Blocos) --- */
+/* --- CONTROLES DE VISUALIZAÇÃO (BOTÕES NO TOPO) --- */
+.view-controls {
+    display: flex;
+    background: #eee;
+    padding: 3px;
+    border-radius: 6px;
+    margin-right: 15px;
+}
+
+.btn-view {
+    border: none;
+    background: transparent;
+    padding: 5px 12px;
+    cursor: pointer;
+    font-size: 12px;
+    border-radius: 4px;
+    color: #555;
+    font-weight: 600;
+}
+
+.btn-view:hover { background: rgba(0,0,0,0.05); }
+
+.btn-view.active {
+    background: white;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    color: #3498db;
+}
+
+/* --- BOTÕES DA TOOLBAR (INSERIR BLOCOS) --- */
 .toolbar button {
     cursor: pointer;
     padding: 10px 15px;
@@ -145,7 +192,7 @@ h2 { margin: 0; color: #444; font-size: 1.5em; }
     letter-spacing: 1px;
 }
 
-/* --- CONTROLES DE BLOCO (MOVER, DUPLICAR, REMOVER) --- */
+/* --- CONTROLES DE BLOCO (SUBIR, DESCER, ETC) --- */
 .header-controls { display: flex; gap: 5px; align-items: center; }
 
 .btn-control {
@@ -176,7 +223,7 @@ h2 { margin: 0; color: #444; font-size: 1.5em; }
 }
 .btn-remove:hover { background: #cc0000; }
 
-/* --- FERRAMENTAS INTERNAS --- */
+/* --- FERRAMENTAS INTERNAS (NEGRITO, LINK...) --- */
 .tools { background: #f1f3f5; padding: 5px; border-radius: 4px; margin-bottom: 5px; display: inline-block; }
 
 .btn-tool {
@@ -205,6 +252,8 @@ h2 { margin: 0; color: #444; font-size: 1.5em; }
     line-height: 1.6;
     box-sizing: border-box;
 }
+
+/* Placeholder Inteligente */
 .editable-box:empty:before {
     content: attr(data-placeholder);
     color: #999;
@@ -218,7 +267,7 @@ h2 { margin: 0; color: #444; font-size: 1.5em; }
     width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px; box-sizing: border-box;
 }
 
-/* --- ESTILOS VISUAIS INTERNOS --- */
+/* --- ESTILOS VISUAIS INTERNOS (EDITOR) --- */
 .editable-box a { color: blue; text-decoration: underline; cursor: text; }
 .editable-box code em { color: #c7254e; background-color: #f9f2f4; padding: 2px 4px; border-radius: 3px; font-family: monospace; font-style: normal; }
 .editable-box kbd { background-color: #eee; border-radius: 3px; border: 1px solid #b4b4b4; box-shadow: 0 1px 1px rgba(0,0,0,.2), 0 2px 0 0 rgba(255,255,255,.7) inset; color: #333; display: inline-block; font-size: .85em; font-weight: 700; line-height: 1; padding: 2px 4px; font-family: monospace; white-space: nowrap; }
@@ -226,26 +275,22 @@ h2 { margin: 0; color: #444; font-size: 1.5em; }
 .editable-box em { font-style: italic; color: #555; }
 .code-block-style { background-color: #2d2d2d; color: #f8f8f2; font-family: 'Consolas', 'Monaco', monospace; padding: 10px; border-radius: 4px; }
 
-/* --- PREVIEW --- */
+/* --- ESTILOS VISUAIS NA PREVIEW/EXPORTAÇÃO --- */
 #preview-output { background: white; padding: 20px; min-height: 80%; }
+
+/* Estilo para Configuração */
+.codigo { font-family: 'Consolas', 'Monaco', monospace; background-color: #f5f5f5; border: 1px solid #ccc; padding: 10px; display: block; white-space: pre-wrap; margin-bottom: 20px; font-size: 13px; color: #333; }
+
+/* Estilo para Código */
 #preview-output pre.prettyprint { background-color: #282c34; color: #abb2bf; font-family: 'Fira Code', 'Consolas', 'Monaco', monospace; font-size: 14px; padding: 15px; border-radius: 6px; border: 1px solid #3e4451; overflow-x: auto; white-space: pre; margin-bottom: 20px; box-shadow: inset 0 0 10px #000000; }
+
+/* Placeholders de Mídia */
 .youtube-placeholder { width: 100%; max-width: 560px; height: 315px; background-color: #e0e0e0; border: 2px dashed #999; display: flex; align-items: center; justify-content: center; color: #555; font-family: sans-serif; font-size: 14px; text-align: center; margin-bottom: 20px; margin-top: 10px; flex-direction: column; padding: 20px; box-sizing: border-box; }
 .image-placeholder { width: 100%; padding: 15px; background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; border-radius: 4px; margin-bottom: 15px; text-align: center; font-family: sans-serif; box-sizing: border-box; }
 
-/* --- MODAL --- */
+/* --- MODAL (AJUDA) --- */
 .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); align-items: center; justify-content: center; }
 .modal-content { background-color: #fefefe; padding: 25px; border: 1px solid #888; width: 60%; max-width: 600px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); position: relative; animation: fadeIn 0.3s; }
 .close-btn { color: #aaa; position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; cursor: pointer; }
 .close-btn:hover { color: black; }
-.codigo {
-    font-family: 'Consolas', 'Monaco', monospace;
-    background-color: #f5f5f5;
-    border: 1px solid #ccc;
-    padding: 10px;
-    display: block;
-    white-space: pre-wrap; /* Mantém a formatação */
-    margin-bottom: 20px;
-    font-size: 13px;
-    color: #333;
-}
 @keyframes fadeIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }

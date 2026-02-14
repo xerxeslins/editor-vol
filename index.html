@@ -8,21 +8,30 @@
 </head>
 <body>
 
-<div class="container">
-    <div class="editor-side">
-        <div class="header-main">
-            <div>
-                <h2>Editor VOL <span class="version-tag">BETA</span></h2>
-                <p class="subtitle">Assistente de criação de conteúdo.</p>
-            </div>
-            <div style="display: flex; align-items: center;">
-                <label class="checkbox-container">
-                    <input type="checkbox" id="confirm-delete"> Confirmar exclusão
-                </label>
-                <button class="btn-help" onclick="toggleHelp()">?</button>
-            </div>
+<div class="header-main">
+    <div>
+        <h2>Editor VOL <span class="version-tag">BETA</span></h2>
+        <p class="subtitle">Assistente de criação de conteúdo.</p>
+    </div>
+
+    <div style="display: flex; align-items: center;">
+        <div class="view-controls">
+            <button id="btn-editor" class="btn-view" onclick="changeView('editor')" title="Apenas Editor">Editor</button>
+            <button id="btn-split" class="btn-view active" onclick="changeView('split')" title="Dividido">Dividido</button>
+            <button id="btn-preview" class="btn-view" onclick="changeView('preview')" title="Apenas Visualização">Visual</button>
         </div>
 
+        <div style="border-left: 1px solid #ddd; height: 30px; margin: 0 10px;"></div>
+
+        <label class="checkbox-container">
+            <input type="checkbox" id="confirm-delete"> Confirmar exclusão
+        </label>
+        <button class="btn-help" onclick="toggleHelp()">?</button>
+    </div>
+</div>
+
+<div class="container">
+    <div class="editor-side">
         <div id="input-container"></div>
 
         <div class="toolbar">
@@ -40,7 +49,6 @@
     </div>
 
     <div class="preview-side">
-        <h2>Visualização</h2>
         <div id="preview-output"></div>
     </div>
 </div>
@@ -72,7 +80,7 @@
             <li><strong>Código:</strong> Bloco escuro para scripts e códigos fontes.</li>
             <li><strong>Vídeo / Imagem:</strong> Placeholders para multimídia.</li>
         </ul>
-        <p><em>Use os botões "Subir", "Descer" e "Duplicar" (ícone de folha) no topo de cada bloco para organizar.</em></p>
+        <p><em>Use os botões de visualização no topo para alternar entre Editor, Dividido e Visualização.</em></p>
     </div>
 </div>
 
