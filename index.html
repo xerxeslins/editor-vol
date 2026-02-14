@@ -11,10 +11,19 @@
 <div class="container">
     <div class="editor-side">
         <div class="header-main">
-            <h2>Editor VOL <span class="version-tag">BETA</span></h2>
-            <button class="btn-help" onclick="toggleHelp()">?</button>
+            <div>
+                <h2>Editor VOL <span class="version-tag">BETA</span></h2>
+                <p class="subtitle">Assistente de criação de conteúdo.</p>
+            </div>
+            <div style="display: flex; align-items: center;">
+                <label class="checkbox-container">
+                    <input type="checkbox" id="confirm-delete"> Confirmar exclusão
+                </label>
+                <button class="btn-help" onclick="toggleHelp()">?</button>
+            </div>
         </div>
-        <p class="subtitle">Assistente de criação de conteúdo para o Viva o Linux.</p>
+
+        <div id="input-container"></div>
 
         <div class="toolbar">
             <button onclick="addBlock('titulo')">+ Título</button>
@@ -27,7 +36,6 @@
             <button onclick="addBlock('imagem')" style="color: #e67e22;">+ Imagem</button>
             <button onclick="exportHtml()" class="btn-export">Exportar HTML</button>
         </div>
-        <div id="input-container"></div>
     </div>
 
     <div class="preview-side">
@@ -41,28 +49,27 @@
         <span class="close-btn" onclick="toggleHelp()">&times;</span>
         <h3>Guia de Uso</h3>
         <p><strong>Ajudante do criador de conteúdo para Viva o Linux.</strong><br>
-        <em>Versão de teste, pode conter erros! Serve para ajudar a criar dicas ou páginas de artigos.</em></p>
+        <em>Versão Beta. Serve para ajudar a criar dicas ou páginas de artigos.</em></p>
+        <hr>
+        <h4>Atalhos de Teclado (na caixa de texto):</h4>
+        <ul>
+            <li><strong>Shift + B:</strong> Negrito</li>
+            <li><strong>Shift + I:</strong> Itálico</li>
+            <li><strong>Shift + K:</strong> Tecla (Kbd)</li>
+            <li><strong>Shift + E:</strong> Ênfase</li>
+            <li><strong>Shift + L:</strong> Link</li>
+        </ul>
         <hr>
         <h4>Blocos Principais:</h4>
         <ul>
             <li><strong>Título:</strong> Cria um título principal.</li>
-            <li><strong>Texto:</strong> Parágrafos comuns. Suporta negrito, itálico, links e setas.</li>
-            <li><strong>Lista:</strong> Cria lista com marcadores. Cada linha vira um item.</li>
-            <li><strong>Comando:</strong> Destaque visual azulado para comandos de terminal rápidos.</li>
-            <li><strong>Saída Cmd:</strong> Caixa branca para mostrar o retorno do terminal.</li>
-            <li><strong>Código:</strong> Bloco escuro para scripts longos ou configurações.</li>
-            <li><strong>Vídeo:</strong> Insira o link do YouTube. No preview mostra uma caixa, na exportação gera o player.</li>
-            <li><strong>Imagem:</strong> Digite o NOME do arquivo. Gera um aviso para o moderador inserir a imagem real.</li>
+            <li><strong>Texto:</strong> Parágrafos comuns. Para criar novos parágrafos no mesmo bloco, basta dar dois "Enter".</li>
+            <li><strong>Lista:</strong> Cria lista com marcadores.</li>
+            <li><strong>Comando:</strong> Destaque visual azulado.</li>
+            <li><strong>Código:</strong> Bloco escuro para scripts.</li>
+            <li><strong>Vídeo / Imagem:</strong> Placeholders para multimídia.</li>
         </ul>
-        <h4>Ferramentas de Formatação (Selecione o texto para usar):</h4>
-        <ul>
-            <li><strong>B / I:</strong> Negrito e Itálico.</li>
-            <li><strong>⌨ Kbd:</strong> Simula tecla de teclado.</li>
-            <li><strong>📝 Ênfase:</strong> Destaque vermelho em linha.</li>
-            <li><strong>🔗 Link:</strong> Transforma a seleção em link clicável.</li>
-            <li><strong>Setas (←↑↓→):</strong> Insere setas direcionais.</li>
-        </ul>
-        <p><em>Nota: Todas as aspas curvas (“ ”) são convertidas automaticamente para aspas retas (") na exportação.</em></p>
+        <p><em>Use os botões "Subir", "Descer" e "Duplicar" (ícone de folha) no topo de cada bloco para organizar.</em></p>
     </div>
 </div>
 
