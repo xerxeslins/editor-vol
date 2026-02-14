@@ -303,6 +303,13 @@ box-shadow: inset 0 0 10px #000000;
 .close-btn:hover {
     color: black;
 }
+.editable-box:empty:before {
+    content: attr(data-placeholder);
+    color: #999;
+    font-style: italic;
+    pointer-events: none; /* Permite clicar através do texto */
+    display: block; /* Garante que o texto ocupe a linha */
+}
 
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(-20px); }

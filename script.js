@@ -52,28 +52,41 @@ function addBlock(type) {
 
     let inputHtml = '';
     let contentStyle = "";
-    let placeholder = "Digite aqui...";
+    let placeholder = ""; // Variável para o texto da dica
     let extraClass = "";
 
-    if (type === 'comando' || type === 'saida-comando') {
+    // DEFINIÇÃO DOS TEXTOS DE DICA (PLACEHOLDERS)
+    if (type === 'comando') {
         contentStyle = "font-family: monospace; background-color: #f8f8f8;";
-        placeholder = "Comando ou Saída...";
+        placeholder = "Digite o comando aqui (ex: sudo apt update)...";
         inputHtml = `<div class="editable-box" contenteditable="true" style="${contentStyle}" oninput="updatePreview()" onkeydown="handleEnter(event)" data-placeholder="${placeholder}"></div>`;
+
+    } else if (type === 'saida-comando') {
+        contentStyle = "font-family: monospace; background-color: #f8f8f8;";
+        placeholder = "Cole a saída/resultado do terminal aqui...";
+        inputHtml = `<div class="editable-box" contenteditable="true" style="${contentStyle}" oninput="updatePreview()" onkeydown="handleEnter(event)" data-placeholder="${placeholder}"></div>`;
+
     } else if (type === 'codigo') {
         extraClass = "code-block-style";
-        placeholder = "Cole ou digite seu código aqui...";
+        placeholder = "Cole seu script, arquivo de configuração ou código fonte aqui...";
         inputHtml = `<div class="editable-box ${extraClass}" contenteditable="true" style="${contentStyle}" oninput="updatePreview()" onkeydown="handleEnter(event)" data-placeholder="${placeholder}"></div>`;
+
     } else if (type === 'lista') {
-        placeholder = "Item 1<br>Item 2";
+        placeholder = "Digite o item 1\nDigite o item 2...";
         inputHtml = `<div class="editable-box" contenteditable="true" oninput="updatePreview()" onkeydown="handleEnter(event)" data-placeholder="${placeholder}"></div>`;
+
     } else if (type === 'texto') {
+        placeholder = "Escreva seus parágrafos aqui. Use as ferramentas acima para formatar.";
         inputHtml = `<div class="editable-box" contenteditable="true" oninput="updatePreview()" onkeydown="handleEnter(event)" data-placeholder="${placeholder}"></div>`;
+
     } else if (type === 'youtube') {
         inputHtml = `<input type="text" class="simple-input" style="width:100%; padding:8px;" oninput="updatePreview()" placeholder="Cole o link completo do vídeo (ex: https://www.youtube.com/watch?v=...)">`;
+
     } else if (type === 'imagem') {
         inputHtml = `<input type="text" class="simple-input" style="width:100%; padding:8px;" oninput="updatePreview()" placeholder="Digite o NOME DO ARQUIVO da imagem (ex: print_tela01.jpg)">`;
+
     } else if (type === 'titulo') {
-        inputHtml = `<input type="text" class="simple-input" style="width:100%; padding:8px; font-size:1.2em; font-weight:bold" oninput="updatePreview()" placeholder="Digite o título...">`;
+        inputHtml = `<input type="text" class="simple-input" style="width:100%; padding:8px; font-size:1.2em; font-weight:bold" oninput="updatePreview()" placeholder="Digite o título da seção...">`;
     }
 
     div.innerHTML = headerHtml + toolsHtml + inputHtml;
@@ -272,3 +285,4 @@ function exportHtml() {
         alert("Erro ao copiar.");
     });
 }
+
