@@ -1,16 +1,21 @@
-/* --- CONFIGURAÇÕES GERAIS --- */
+/* --- RESETA E CONFIGURAÇÕES GLOBAIS (CRUCIAL PARA O LAYOUT) --- */
+* {
+    box-sizing: border-box; /* Garante que paddings não estourem a tela */
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
+    padding: 0;
     background: #f4f4f4;
     color: #333;
-    height: 100vh; /* Altura total da tela */
-    display: flex; /* Transforma o corpo em flexbox */
-    flex-direction: column; /* Organiza itens (Header, Container) em coluna vertical */
-    overflow: hidden; /* Evita scroll na página inteira */
+    height: 100vh; /* Altura exata da janela */
+    display: flex;
+    flex-direction: column; /* Organiza Header em cima e Conteúdo em baixo */
+    overflow: hidden; /* Evita barra de rolagem na página inteira */
 }
 
-/* Cabeçalho Fixo no Topo (Agora fora das colunas) */
+/* --- CABEÇALHO FIXO NO TOPO --- */
 .header-main {
     padding: 10px 20px;
     background: #fff;
@@ -18,20 +23,22 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-shrink: 0; /* Impede que o cabeçalho seja esmagado */
+    flex-shrink: 0; /* Não deixa o cabeçalho encolher */
+    height: 60px; /* Define altura fixa para garantir estabilidade */
     z-index: 20;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
-/* Container Principal (Ocupa o resto do espaço abaixo do cabeçalho) */
+/* --- CONTAINER PRINCIPAL --- */
 .container {
     display: flex;
-    flex: 1;
+    flex: 1; /* Ocupa todo o espaço restante abaixo do cabeçalho */
+    height: calc(100vh - 60px); /* Garante que não ultrapasse a tela */
     width: 100vw;
-    overflow: hidden; /* O scroll é interno, nas colunas */
+    overflow: hidden;
 }
 
-/* --- CLASSES UTILITÁRIAS DE VISUALIZAÇÃO --- */
+/* --- CLASSES UTILITÁRIAS --- */
 .hidden { display: none !important; }
 
 .full-width {
@@ -47,29 +54,31 @@ body {
     flex-direction: column;
     border-right: 1px solid #ccc;
     background: #f9f9f9;
-    transition: flex 0.3s ease; /* Animação suave */
+    height: 100%; /* Força altura total do container pai */
+    transition: flex 0.3s ease;
 }
 
-/* Área de Scroll dos Blocos (Miolo do Editor) */
+/* Área de Scroll dos Blocos (Onde ficam as caixas) */
 #input-container {
-flex: 1;
+flex: 1; /* Ocupa o espaço entre o topo e a barra de ferramentas */
 overflow-y: auto;
 padding: 20px;
-padding-bottom: 80px;
+padding-bottom: 20px;
 }
 
-/* Barra de Ferramentas Fixa no Rodapé do Editor */
+/* Barra de Ferramentas Fixa no Rodapé */
 .toolbar {
     padding: 15px 20px;
     background: #fff;
     border-top: 1px solid #ddd;
     box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
     z-index: 10;
-    flex-shrink: 0;
+    flex-shrink: 0; /* Garante que a barra nunca seja esmagada/oculta */
     display: flex;
     flex-wrap: wrap;
     gap: 5px;
     justify-content: center;
+    min-height: 70px; /* Garante altura mínima para os botões */
 }
 
 /* --- LADO DA VISUALIZAÇÃO --- */
@@ -78,6 +87,7 @@ padding-bottom: 80px;
     padding: 20px;
     overflow-y: auto;
     background: #fff;
+    height: 100%;
     transition: flex 0.3s ease;
 }
 
@@ -86,7 +96,7 @@ h2 { margin: 0; color: #444; font-size: 1.5em; }
 .version-tag { font-size: 0.5em; background: #e74c3c; color: white; padding: 2px 5px; border-radius: 3px; vertical-align: middle; }
 .subtitle { font-size: 0.9em; color: #666; margin: 5px 0 0 0; font-style: italic; }
 
-/* --- CONTROLES DE VISUALIZAÇÃO (BOTÕES NO TOPO) --- */
+/* --- CONTROLES DE VISUALIZAÇÃO --- */
 .view-controls {
     display: flex;
     background: #eee;
@@ -105,16 +115,10 @@ h2 { margin: 0; color: #444; font-size: 1.5em; }
     color: #555;
     font-weight: 600;
 }
-
 .btn-view:hover { background: rgba(0,0,0,0.05); }
+.btn-view.active { background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); color: #3498db; }
 
-.btn-view.active {
-    background: white;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    color: #3498db;
-}
-
-/* --- BOTÕES DA TOOLBAR (INSERIR BLOCOS) --- */
+/* --- BOTÕES DA TOOLBAR --- */
 .toolbar button {
     cursor: pointer;
     padding: 10px 15px;
@@ -124,47 +128,17 @@ h2 { margin: 0; color: #444; font-size: 1.5em; }
     transition: all 0.2s;
     font-weight: 500;
 }
+.toolbar button:hover { background: #e2e6ea; border-color: #adb5bd; transform: translateY(-1px); }
 
-.toolbar button:hover {
-    background: #e2e6ea;
-    border-color: #adb5bd;
-    transform: translateY(-1px);
-}
+.btn-export { background-color: #27ae60 !important; color: white !important; border: none !important; }
+.btn-export:hover { background-color: #219150 !important; }
 
-.btn-export {
-    background-color: #27ae60 !important;
-    color: white !important;
-    border: none !important;
-}
-
-.btn-export:hover {
-    background-color: #219150 !important;
-}
-
-/* Botão de Ajuda (?) */
-.btn-help {
-    background: #3498db;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    cursor: pointer;
-    font-weight: bold;
-    margin-left: 10px;
-}
-
-/* Checkbox Container */
-.checkbox-container {
-    display: flex;
-    align-items: center;
-    font-size: 0.9em;
-    color: #555;
-    margin-left: 10px;
-}
+/* Botões Auxiliares */
+.btn-help { background: #3498db; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; font-weight: bold; margin-left: 10px; }
+.checkbox-container { display: flex; align-items: center; font-size: 0.9em; color: #555; margin-left: 10px; }
 .checkbox-container input { margin-right: 5px; }
 
-/* --- BLOCOS DE INPUT (AS CAIXAS) --- */
+/* --- BLOCOS DE INPUT --- */
 .block-input {
     margin-bottom: 20px;
     padding: 15px;
@@ -174,121 +148,44 @@ h2 { margin: 0; color: #444; font-size: 1.5em; }
     border-left: 4px solid #3498db;
     animation: slideIn 0.3s ease;
 }
+@keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-@keyframes slideIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
+.block-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px; font-size: 0.85em; color: #777; letter-spacing: 1px; }
 
-.block-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-    border-bottom: 1px solid #eee;
-    padding-bottom: 5px;
-    font-size: 0.85em;
-    color: #777;
-    letter-spacing: 1px;
-}
-
-/* --- CONTROLES DE BLOCO (SUBIR, DESCER, ETC) --- */
+/* Controles de Bloco */
 .header-controls { display: flex; gap: 5px; align-items: center; }
-
-.btn-control {
-    background: #f0f0f0;
-    border: 1px solid #ccc;
-    color: #555;
-    border-radius: 3px;
-    padding: 3px 8px;
-    cursor: pointer;
-    font-size: 11px;
-    transition: background 0.2s;
-    text-transform: uppercase;
-    font-weight: bold;
-}
-
+.btn-control { background: #f0f0f0; border: 1px solid #ccc; color: #555; border-radius: 3px; padding: 3px 8px; cursor: pointer; font-size: 11px; transition: background 0.2s; text-transform: uppercase; font-weight: bold; }
 .btn-control:hover { background: #e0e0e0; color: #333; }
-
-.btn-remove {
-    background: #ff4d4d;
-    color: white;
-    border: none;
-    border-radius: 3px;
-    padding: 3px 8px;
-    cursor: pointer;
-    margin-left: 10px;
-    font-size: 11px;
-    font-weight: bold;
-}
+.btn-remove { background: #ff4d4d; color: white; border: none; border-radius: 3px; padding: 3px 8px; cursor: pointer; margin-left: 10px; font-size: 11px; font-weight: bold; }
 .btn-remove:hover { background: #cc0000; }
 
-/* --- FERRAMENTAS INTERNAS (NEGRITO, LINK...) --- */
+/* Ferramentas Internas */
 .tools { background: #f1f3f5; padding: 5px; border-radius: 4px; margin-bottom: 5px; display: inline-block; }
-
-.btn-tool {
-    background: #fff;
-    border: 1px solid #ced4da;
-    font-size: 12px;
-    padding: 4px 8px;
-    cursor: pointer;
-    border-radius: 3px;
-    margin-right: 3px;
-    color: #495057;
-    min-width: 25px;
-}
+.btn-tool { background: #fff; border: 1px solid #ced4da; font-size: 12px; padding: 4px 8px; cursor: pointer; border-radius: 3px; margin-right: 3px; color: #495057; min-width: 25px; }
 .btn-tool:hover { background: #e9ecef; }
 
-/* --- ÁREAS EDITÁVEIS --- */
-.editable-box {
-    width: 100%;
-    min-height: 80px;
-    border: 1px solid #ced4da;
-    padding: 10px;
-    border-radius: 4px;
-    background: #fff;
-    outline: none;
-    overflow-wrap: break-word;
-    line-height: 1.6;
-    box-sizing: border-box;
-}
-
-/* Placeholder Inteligente */
-.editable-box:empty:before {
-    content: attr(data-placeholder);
-    color: #999;
-    font-style: italic;
-    pointer-events: none;
-    display: block;
-}
+/* Áreas Editáveis */
+.editable-box { width: 100%; min-height: 80px; border: 1px solid #ced4da; padding: 10px; border-radius: 4px; background: #fff; outline: none; overflow-wrap: break-word; line-height: 1.6; }
+.editable-box:empty:before { content: attr(data-placeholder); color: #999; font-style: italic; pointer-events: none; display: block; }
 .editable-box:focus { border-color: #3498db; box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.25); }
+.simple-input { width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px; }
 
-.simple-input {
-    width: 100%; padding: 10px; border: 1px solid #ced4da; border-radius: 4px; font-size: 14px; box-sizing: border-box;
-}
-
-/* --- ESTILOS VISUAIS INTERNOS (EDITOR) --- */
+/* Estilos Visuais Internos */
 .editable-box a { color: blue; text-decoration: underline; cursor: text; }
 .editable-box code em { color: #c7254e; background-color: #f9f2f4; padding: 2px 4px; border-radius: 3px; font-family: monospace; font-style: normal; }
 .editable-box kbd { background-color: #eee; border-radius: 3px; border: 1px solid #b4b4b4; box-shadow: 0 1px 1px rgba(0,0,0,.2), 0 2px 0 0 rgba(255,255,255,.7) inset; color: #333; display: inline-block; font-size: .85em; font-weight: 700; line-height: 1; padding: 2px 4px; font-family: monospace; white-space: nowrap; }
 .editable-box strong { font-weight: bold; color: #000; }
 .editable-box em { font-style: italic; color: #555; }
 .code-block-style { background-color: #2d2d2d; color: #f8f8f2; font-family: 'Consolas', 'Monaco', monospace; padding: 10px; border-radius: 4px; }
-
-/* --- ESTILOS VISUAIS NA PREVIEW/EXPORTAÇÃO --- */
-#preview-output { background: white; padding: 20px; min-height: 80%; }
-
-/* Estilo para Configuração */
 .codigo { font-family: 'Consolas', 'Monaco', monospace; background-color: #f5f5f5; border: 1px solid #ccc; padding: 10px; display: block; white-space: pre-wrap; margin-bottom: 20px; font-size: 13px; color: #333; }
 
-/* Estilo para Código */
+/* Preview */
+#preview-output { background: white; padding: 20px; min-height: 80%; }
 #preview-output pre.prettyprint { background-color: #282c34; color: #abb2bf; font-family: 'Fira Code', 'Consolas', 'Monaco', monospace; font-size: 14px; padding: 15px; border-radius: 6px; border: 1px solid #3e4451; overflow-x: auto; white-space: pre; margin-bottom: 20px; box-shadow: inset 0 0 10px #000000; }
+.youtube-placeholder { width: 100%; max-width: 560px; height: 315px; background-color: #e0e0e0; border: 2px dashed #999; display: flex; align-items: center; justify-content: center; color: #555; font-family: sans-serif; font-size: 14px; text-align: center; margin-bottom: 20px; margin-top: 10px; flex-direction: column; padding: 20px; }
+.image-placeholder { width: 100%; padding: 15px; background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; border-radius: 4px; margin-bottom: 15px; text-align: center; font-family: sans-serif; }
 
-/* Placeholders de Mídia */
-.youtube-placeholder { width: 100%; max-width: 560px; height: 315px; background-color: #e0e0e0; border: 2px dashed #999; display: flex; align-items: center; justify-content: center; color: #555; font-family: sans-serif; font-size: 14px; text-align: center; margin-bottom: 20px; margin-top: 10px; flex-direction: column; padding: 20px; box-sizing: border-box; }
-.image-placeholder { width: 100%; padding: 15px; background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; border-radius: 4px; margin-bottom: 15px; text-align: center; font-family: sans-serif; box-sizing: border-box; }
-
-/* --- MODAL (AJUDA) --- */
+/* Modal */
 .modal { display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.6); align-items: center; justify-content: center; }
 .modal-content { background-color: #fefefe; padding: 25px; border: 1px solid #888; width: 60%; max-width: 600px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); position: relative; animation: fadeIn 0.3s; }
 .close-btn { color: #aaa; position: absolute; top: 10px; right: 15px; font-size: 28px; font-weight: bold; cursor: pointer; }
