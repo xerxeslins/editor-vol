@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Editor VOL</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="container">
+    <div class="editor-side">
+        <div class="header-main">
+            <h2>Editor VOL <span class="version-tag">BETA</span></h2>
+            <button class="btn-help" onclick="toggleHelp()">?</button>
+        </div>
+        <p class="subtitle">Assistente de criação de conteúdo para o Viva o Linux.</p>
+
+        <div class="toolbar">
+            <button onclick="addBlock('titulo')">+ Título</button>
+            <button onclick="addBlock('texto')">+ Texto</button>
+            <button onclick="addBlock('lista')">+ Lista</button>
+            <button onclick="addBlock('comando')">+ Comando</button>
+            <button onclick="addBlock('saida-comando')">+ Saída Cmd</button>
+            <button onclick="addBlock('codigo')">+ Código</button>
+            <button onclick="addBlock('youtube')" style="color: #cc0000;">+ Vídeo</button>
+            <button onclick="addBlock('imagem')" style="color: #e67e22;">+ Imagem</button>
+            <button onclick="exportHtml()" class="btn-export">Exportar HTML</button>
+        </div>
+        <div id="input-container"></div>
+    </div>
+
+    <div class="preview-side">
+        <h2>Visualização</h2>
+        <div id="preview-output"></div>
+    </div>
+</div>
+
+<div id="help-modal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="toggleHelp()">&times;</span>
+        <h3>Guia de Uso</h3>
+        <p><strong>Ajudante do criador de conteúdo para Viva o Linux.</strong><br>
+        <em>Versão de teste, pode conter erros! Serve para ajudar a criar dicas ou páginas de artigos.</em></p>
+        <hr>
+        <h4>Blocos Principais:</h4>
+        <ul>
+            <li><strong>Título:</strong> Cria um título principal.</li>
+            <li><strong>Texto:</strong> Parágrafos comuns. Suporta negrito, itálico, links e setas.</li>
+            <li><strong>Lista:</strong> Cria lista com marcadores. Cada linha vira um item.</li>
+            <li><strong>Comando:</strong> Destaque visual azulado para comandos de terminal rápidos.</li>
+            <li><strong>Saída Cmd:</strong> Caixa branca para mostrar o retorno do terminal.</li>
+            <li><strong>Código:</strong> Bloco escuro para scripts longos ou configurações.</li>
+            <li><strong>Vídeo:</strong> Insira o link do YouTube. No preview mostra uma caixa, na exportação gera o player.</li>
+            <li><strong>Imagem:</strong> Digite o NOME do arquivo. Gera um aviso para o moderador inserir a imagem real.</li>
+        </ul>
+        <h4>Ferramentas de Formatação (Selecione o texto para usar):</h4>
+        <ul>
+            <li><strong>B / I:</strong> Negrito e Itálico.</li>
+            <li><strong>⌨ Kbd:</strong> Simula tecla de teclado.</li>
+            <li><strong>📝 Ênfase:</strong> Destaque vermelho em linha.</li>
+            <li><strong>🔗 Link:</strong> Transforma a seleção em link clicável.</li>
+            <li><strong>Setas (←↑↓→):</strong> Insere setas direcionais.</li>
+        </ul>
+        <p><em>Nota: Todas as aspas curvas (“ ”) são convertidas automaticamente para aspas retas (") na exportação.</em></p>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
