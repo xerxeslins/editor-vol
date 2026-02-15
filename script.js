@@ -317,6 +317,7 @@ function generateHtml(isExport) {
         let content = simpleInput ? simpleInput.value : (editableBox ? editableBox.innerHTML : "");
         content = cleanContent(content);
 
+        // Converte setas apenas na exportação
         if (isExport) {
             content = content.replace(/←/g, '&larr;')
             .replace(/↑/g, '&uarr;')
@@ -324,26 +325,33 @@ function generateHtml(isExport) {
             .replace(/↓/g, '&darr;');
         }
 
+        // Se o bloco não estiver vazio
         if (content.trim() !== "" && content !== "<br>") {
+
+            // Define a quebra de linha do código fonte
+            // Se for Exportação, usa \n\n (cria uma linha vazia visual). Se for Preview, usa só \n.
+            const codeBreak = isExport ? "\n\n" : "\n";
+
             if (type === 'titulo') {
-                html += `<h1>${content}</h1>\n`;
+                html += `<h1>${content}</h1>${codeBreak}`;
             } else if (type === 'texto') {
                 const nextBlock = blocks[index + 1];
                 const isNextList = nextBlock && nextBlock.dataset.type === 'lista';
                 if (isNextList) {
-                    html += `${content}\n`;
+                    // Texto antes de lista não leva <br><br> visual, mas leva quebra no código
+                    html += `${content}${codeBreak}`;
                 } else {
-                    html += `${content}<br/><br/>\n`;
+                    html += `${content}<br/><br/>${codeBreak}`;
                 }
             } else if (type === 'comando') {
-                html += `<div class="destaque" style="background-color: #f0f8ff; padding: 10px; border-radius: 4px; font-family: monospace; white-space: pre-wrap; border: 1px solid #ddd; margin: 5px 0; font-weight: bold;">${content}</div><br/>\n`;
+                html += `<div class="destaque" style="background-color: #f0f8ff; padding: 10px; border-radius: 4px; font-family: monospace; white-space: pre-wrap; border: 1px solid #ddd; margin: 5px 0; font-weight: bold;">${content}</div><br/>${codeBreak}`;
             } else if (type === 'saida-comando') {
-                html += `<div style="background-color: #ffffff; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-family: Consolas, 'Courier New', monospace; font-size: 13px; white-space: pre-wrap; margin: 5px 0;"><samp>${content}</samp></div><br/>\n`;
+                html += `<div style="background-color: #ffffff; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-family: Consolas, 'Courier New', monospace; font-size: 13px; white-space: pre-wrap; margin: 5px 0;"><samp>${content}</samp></div><br/>${codeBreak}`;
             } else if (type === 'configuracao') {
-                html += `<div class='codigo'>${content}</div><br/>\n`;
+                html += `<div class='codigo'>${content}</div><br/>${codeBreak}`;
             } else if (type === 'codigo') {
                 let cleanCode = content.replace(/<br\s*\/?>/gi, '\n');
-                html += `<pre class="prettyprint">${cleanCode}</pre><br/>\n`;
+                html += `<pre class="prettyprint">${cleanCode}</pre><br/>${codeBreak}`;
             } else if (type === 'lista') {
                 let listContent = content.replace(/<br\s*\/?>/gi, '\n');
                 const items = listContent.split('\n');
@@ -352,12 +360,12 @@ function generateHtml(isExport) {
                     let cleanItem = item.trim();
                     if (cleanItem !== "") listItemsHtml += `<li>${cleanItem}</li>`;
                 });
-                if (listItemsHtml) html += `<ul>${listItemsHtml}</ul><br/>\n`;
+                if (listItemsHtml) html += `<ul>${listItemsHtml}</ul><br/>${codeBreak}`;
             } else if (type === 'youtube') {
                 const videoId = getYoutubeId(content);
                 if (videoId) {
                     if (isExport) {
-                        html += `<iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><br/><br/>\n`;
+                        html += `<iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><br/><br/>${codeBreak}`;
                     } else {
                         html += `<div class="youtube-placeholder">VIDEO ID: ${videoId}<br>Se inseriu um link válido, o vídeo ficará aqui após a publicação.</div>\n`;
                     }
@@ -368,7 +376,7 @@ function generateHtml(isExport) {
                 }
             } else if (type === 'imagem') {
                 if (isExport) {
-                    html += `<p style="color: red; font-weight: bold; border: 1px dashed red; padding: 10px;">[AVISO AO MODERADOR: ADICIONAR IMAGEM "${content}" AQUI]</p><br/><br/>\n`;
+                    html += `<p style="color: red; font-weight: bold; border: 1px dashed red; padding: 10px;">[AVISO AO MODERADOR: ADICIONAR IMAGEM "${content}" AQUI]</p><br/><br/>${codeBreak}`;
                 } else {
                     html += `<div class="image-placeholder">Caro moderador, por favor adicione a imagem <strong>${content}</strong> aqui.</div>\n`;
                 }
@@ -377,7 +385,7 @@ function generateHtml(isExport) {
     });
 
     if (isExport) {
-        return `<div>\n${html}</div>`;
+        return `<div>${isExport ? "\n\n" : "\n"}${html}</div>`;
     }
     return html;
 }
