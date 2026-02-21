@@ -1,6 +1,6 @@
 /* --- RESETA E CONFIGURAÇÕES GLOBAIS (CRUCIAL PARA O LAYOUT) --- */
 * {
-    box-sizing: border-box; /* Garante que paddings não estourem a tela */
+    box-sizing: border-box;
 }
 
 body {
@@ -9,10 +9,10 @@ body {
     padding: 0;
     background: #f4f4f4;
     color: #333;
-    height: 100vh; /* Altura exata da janela */
+    height: 100vh;
     display: flex;
-    flex-direction: column; /* Organiza Header em cima e Conteúdo em baixo */
-    overflow: hidden; /* Evita barra de rolagem na página inteira */
+    flex-direction: column;
+    overflow: hidden;
 }
 
 /* --- CABEÇALHO FIXO NO TOPO --- */
@@ -23,8 +23,8 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    flex-shrink: 0; /* Não deixa o cabeçalho encolher */
-    height: 60px; /* Define altura fixa para garantir estabilidade */
+    flex-shrink: 0;
+    height: 60px;
     z-index: 20;
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
@@ -32,8 +32,8 @@ body {
 /* --- CONTAINER PRINCIPAL --- */
 .container {
     display: flex;
-    flex: 1; /* Ocupa todo o espaço restante abaixo do cabeçalho */
-    height: calc(100vh - 60px); /* Garante que não ultrapasse a tela */
+    flex: 1;
+    height: calc(100vh - 60px);
     width: 100vw;
     overflow: hidden;
 }
@@ -54,13 +54,13 @@ body {
     flex-direction: column;
     border-right: 1px solid #ccc;
     background: #f9f9f9;
-    height: 100%; /* Força altura total do container pai */
+    height: 100%;
     transition: flex 0.3s ease;
 }
 
 /* Área de Scroll dos Blocos (Onde ficam as caixas) */
 #input-container {
-flex: 1; /* Ocupa o espaço entre o topo e a barra de ferramentas */
+flex: 1;
 overflow-y: auto;
 padding: 20px;
 padding-bottom: 20px;
@@ -73,12 +73,12 @@ padding-bottom: 20px;
     border-top: 1px solid #ddd;
     box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
     z-index: 10;
-    flex-shrink: 0; /* Garante que a barra nunca seja esmagada/oculta */
+    flex-shrink: 0;
     display: flex;
     flex-wrap: wrap;
     gap: 5px;
     justify-content: center;
-    min-height: 70px; /* Garante altura mínima para os botões */
+    min-height: 70px;
 }
 
 /* --- LADO DA VISUALIZAÇÃO --- */
@@ -182,6 +182,18 @@ h2 { margin: 0; color: #444; font-size: 1.5em; }
 /* Preview */
 #preview-output { background: white; padding: 20px; min-height: 80%; }
 #preview-output pre.prettyprint { background-color: #282c34; color: #abb2bf; font-family: 'Fira Code', 'Consolas', 'Monaco', monospace; font-size: 14px; padding: 15px; border-radius: 6px; border: 1px solid #3e4451; overflow-x: auto; white-space: pre; margin-bottom: 20px; box-shadow: inset 0 0 10px #000000; }
+
+/* Estilo Discreto para Citação no Preview */
+#preview-output blockquote {
+background-color: #f8f9fa;
+border-left: 4px solid #adb5bd;
+padding: 10px 15px;
+margin: 15px 0;
+font-style: italic;
+color: #555;
+border-radius: 0 4px 4px 0;
+}
+
 .youtube-placeholder { width: 100%; max-width: 560px; height: 315px; background-color: #e0e0e0; border: 2px dashed #999; display: flex; align-items: center; justify-content: center; color: #555; font-family: sans-serif; font-size: 14px; text-align: center; margin-bottom: 20px; margin-top: 10px; flex-direction: column; padding: 20px; }
 .image-placeholder { width: 100%; padding: 15px; background-color: #fff3cd; border: 1px solid #ffeeba; color: #856404; border-radius: 4px; margin-bottom: 15px; text-align: center; font-family: sans-serif; }
 

@@ -75,7 +75,7 @@ function addBlock(type, initialContent = "") {
 
     let toolsHtml = '';
 
-    if (['texto', 'lista'].includes(type)) {
+    if (['texto', 'lista', 'citacao'].includes(type)) {
         toolsHtml = `<div class="tools">
         <button class="btn-tool" onmousedown="applyFormat('bold', event)" title="Negrito (Ctrl+B)"><b>B</b></button>
         <button class="btn-tool" onmousedown="applyFormat('italic', event)" title="Itálico (Ctrl+I)"><i>I</i></button>
@@ -97,11 +97,43 @@ function addBlock(type, initialContent = "") {
     }
 
     let inputHtml = '';
+    let contentStyle = "";
+    let placeholder = "";
+    let extraClass = "";
 
-    if (type === 'titulo') {
-        inputHtml = `<input type="text" class="simple-input" oninput="updatePreview()">`;
-    } else {
-        inputHtml = `<div class="editable-box" contenteditable="true" oninput="updatePreview()"></div>`;
+    if (type === 'comando') {
+        contentStyle = "font-family: monospace; background-color: #f8f8f8;";
+        placeholder = "Digite o comando aqui...";
+        inputHtml = `<div class="editable-box" contenteditable="true" style="${contentStyle}" oninput="updatePreview()" data-placeholder="${placeholder}"></div>`;
+    } else if (type === 'saida-comando') {
+        contentStyle = "font-family: monospace; background-color: #f8f8f8;";
+        placeholder = "Cole a saída do terminal aqui...";
+        inputHtml = `<div class="editable-box" contenteditable="true" style="${contentStyle}" oninput="updatePreview()" data-placeholder="${placeholder}"></div>`;
+    } else if (type === 'configuracao') {
+        extraClass = "code-block-style";
+        contentStyle = "background-color: #f4f4f4; color: #333; border: 1px solid #ccc;";
+        placeholder = "Cole o conteúdo do arquivo de configuração (.conf, .ini, etc)...";
+        inputHtml = `<div class="editable-box ${extraClass}" contenteditable="true" style="${contentStyle}" oninput="updatePreview()" data-placeholder="${placeholder}"></div>`;
+    } else if (type === 'codigo') {
+        extraClass = "code-block-style";
+        placeholder = "Cole seu código fonte aqui (scripts, C, Python, etc)...";
+        inputHtml = `<div class="editable-box ${extraClass}" contenteditable="true" style="${contentStyle}" oninput="updatePreview()" data-placeholder="${placeholder}"></div>`;
+    } else if (type === 'lista') {
+        placeholder = "Digite o item 1\nDigite o item 2...";
+        inputHtml = `<div class="editable-box" contenteditable="true" oninput="updatePreview()" data-placeholder="${placeholder}"></div>`;
+    } else if (type === 'texto') {
+        placeholder = "Escreva seus parágrafos aqui. Use Ctrl+B para negrito, etc.";
+        inputHtml = `<div class="editable-box" contenteditable="true" oninput="updatePreview()" data-placeholder="${placeholder}"></div>`;
+    } else if (type === 'citacao') {
+        contentStyle = "border-left: 4px solid #ccc; padding-left: 10px; font-style: italic; color: #555; background-color: #fcfcfc;";
+        placeholder = "Digite a citação aqui. Use Ctrl+B para negrito, etc.";
+        inputHtml = `<div class="editable-box" contenteditable="true" style="${contentStyle}" oninput="updatePreview()" data-placeholder="${placeholder}"></div>`;
+    } else if (type === 'youtube') {
+        inputHtml = `<input type="text" class="simple-input" style="width:100%; padding:8px;" oninput="updatePreview()" placeholder="Cole o link do YouTube...">`;
+    } else if (type === 'imagem') {
+        inputHtml = `<input type="text" class="simple-input" style="width:100%; padding:8px;" oninput="updatePreview()" placeholder="Nome do arquivo da imagem...">`;
+    } else if (type === 'titulo') {
+        inputHtml = `<input type="text" class="simple-input" style="width:100%; padding:8px; font-size:1.2em; font-weight:bold" oninput="updatePreview()" placeholder="Digite o título...">`;
     }
 
     div.innerHTML = headerHtml + toolsHtml + inputHtml;
@@ -165,13 +197,11 @@ function applyFormat(formatType, event) {
 
     if (selectedText.length === 0 && formatType !== 'clear') return;
 
-    // Não permitir espaços nas extremidades
     if (selectedText && /^\s|\s$/.test(selectedText)) {
         alert("A seleção não pode começar nem terminar com espaços.");
         return;
     }
 
-    // Limpar formatação
     if (formatType === 'clear') {
         document.execCommand('removeFormat', false, null);
         document.execCommand('unlink', false, null);
@@ -179,7 +209,6 @@ function applyFormat(formatType, event) {
         return;
     }
 
-    // Formatações nativas
     const nativeFormats = {
         bold: 'bold',
         italic: 'italic',
@@ -188,23 +217,19 @@ function applyFormat(formatType, event) {
 
     if (nativeFormats[formatType]) {
 
-        // Aplica na seleção
         document.execCommand(nativeFormats[formatType], false, null);
 
-        // Colapsa o cursor no final
         const newRange = selection.getRangeAt(0);
         newRange.collapse(false);
         selection.removeAllRanges();
         selection.addRange(newRange);
 
-        // Desativa o modo de digitação
         document.execCommand(nativeFormats[formatType], false, null);
 
         updatePreview();
         return;
     }
 
-    // Link
     if (formatType === 'link') {
         const url = prompt("Insira a URL:");
         if (url) {
@@ -222,7 +247,6 @@ function applyFormat(formatType, event) {
         return;
     }
 
-    // Formatos personalizados
     if (formatType === 'kbd') {
         document.execCommand('insertHTML', false, `<kbd>${selectedText}</kbd>`);
     }
@@ -257,23 +281,114 @@ function duplicateBlock(btn) {
     updatePreview();
 }
 
-function generateHtml() {
+function cleanContent(html) {
+    let clean = html;
+    clean = clean.replace(/\u200B/g, '');
+    clean = clean.replace(/ style="[^"]*"/gi, '');
+    clean = clean.replace(/ class="[^"]*"/gi, '');
+    clean = clean.replace(/<\/?span[^>]*>/gi, '');
+
+    clean = clean.replace(/<div[^>]*>\s*<br\s*\/?>\s*<\/div>/gi, '<br>');
+    clean = clean.replace(/<div[^>]*>/gi, '<br>');
+    clean = clean.replace(/<\/div>/gi, '');
+    clean = clean.replace(/(<br\s*\/?>){3,}/gi, '<br><br>');
+
+    clean = clean.replace(/^<br\s*\/?>/i, '');
+    clean = clean.replace(/[\u201C\u201D]/g, '"');
+    return clean;
+}
+
+function generateHtml(isExport) {
     let html = "";
-    document.querySelectorAll('.block-input').forEach(block => {
+    const blocks = document.querySelectorAll('.block-input');
+
+    blocks.forEach((block, index) => {
         const type = block.dataset.type;
         const simpleInput = block.querySelector('.simple-input');
         const editableBox = block.querySelector('.editable-box');
-        let content = simpleInput ? simpleInput.value : (editableBox ? editableBox.innerHTML : "");
 
-        if (content.trim() !== "") {
-            if (type === 'titulo') html += `<h1>${content}</h1>\n`;
-            else html += `${content}<br><br>\n`;
+        let content = simpleInput ? simpleInput.value : (editableBox ? editableBox.innerHTML : "");
+        content = cleanContent(content);
+
+        if (isExport) {
+            content = content.replace(/←/g, '&larr;')
+            .replace(/↑/g, '&uarr;')
+            .replace(/→/g, '&rarr;')
+            .replace(/↓/g, '&darr;');
+        }
+
+        if (content.trim() !== "" && content !== "<br>") {
+            const codeBreak = isExport ? "\n\n" : "\n";
+
+            if (type === 'titulo') {
+                html += `<h1>${content}</h1>${codeBreak}`;
+            } else if (type === 'texto') {
+                const nextBlock = blocks[index + 1];
+                const isNextList = nextBlock && nextBlock.dataset.type === 'lista';
+                if (isNextList) {
+                    html += `${content}${codeBreak}`;
+                } else {
+                    html += `${content}<br/><br/>${codeBreak}`;
+                }
+            } else if (type === 'citacao') {
+                html += `<blockquote>${content}</blockquote><br/>${codeBreak}`;
+            } else if (type === 'comando') {
+                html += `<div class="destaque" style="background-color: #f0f8ff; padding: 10px; border-radius: 4px; font-family: monospace; white-space: pre-wrap; border: 1px solid #ddd; margin: 5px 0; font-weight: bold;">${content}</div><br/>${codeBreak}`;
+            } else if (type === 'saida-comando') {
+                html += `<div style="background-color: #ffffff; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-family: Consolas, 'Courier New', monospace; font-size: 13px; white-space: pre-wrap; margin: 5px 0;"><samp>${content}</samp></div><br/>${codeBreak}`;
+            } else if (type === 'configuracao') {
+                html += `<div class='codigo'>${content}</div><br/>${codeBreak}`;
+            } else if (type === 'codigo') {
+                let cleanCode = content.replace(/<br\s*\/?>/gi, '\n');
+                html += `<pre class="prettyprint">${cleanCode}</pre><br/>${codeBreak}`;
+            } else if (type === 'lista') {
+                let listContent = content.replace(/<br\s*\/?>/gi, '\n');
+                const items = listContent.split('\n');
+                let listItemsHtml = "";
+                items.forEach(item => {
+                    let cleanItem = item.trim();
+                    if (cleanItem !== "") listItemsHtml += `<li>${cleanItem}</li>`;
+                });
+                if (listItemsHtml) html += `<ul>${listItemsHtml}</ul><br/>${codeBreak}`;
+            } else if (type === 'youtube') {
+                const videoId = getYoutubeId(content);
+                if (videoId) {
+                    if (isExport) {
+                        html += `<iframe width="560" height="315" src="https://www.youtube.com/embed/${videoId}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe><br/><br/>${codeBreak}`;
+                    } else {
+                        html += `<div class="youtube-placeholder">VIDEO ID: ${videoId}<br>Se inseriu um link válido, o vídeo ficará aqui após a publicação.</div>\n`;
+                    }
+                } else {
+                    if (!isExport) {
+                        html += `<div class="youtube-placeholder" style="background-color: #ffe6e6; border: 2px dashed #ff4d4d; color: #d8000c;">⚠️ <b>Link Inválido</b><br>Cole a URL completa do YouTube.</div>\n`;
+                    }
+                }
+            } else if (type === 'imagem') {
+                if (isExport) {
+                    html += `<p style="color: red; font-weight: bold; border: 1px dashed red; padding: 10px;">[AVISO AO MODERADOR: ADICIONAR IMAGEM "${content}" AQUI]</p><br/><br/>${codeBreak}`;
+                } else {
+                    html += `<div class="image-placeholder">Caro moderador, por favor adicione a imagem <strong>${content}</strong> aqui.</div>\n`;
+                }
+            }
         }
     });
+
+    if (isExport) {
+        return `<div>${isExport ? "\n\n" : "\n"}${html}</div>`;
+    }
     return html;
 }
 
 function updatePreview() {
-    previewOutput.innerHTML = generateHtml();
+    previewOutput.innerHTML = generateHtml(false);
     saveToLocal();
+}
+
+function exportHtml() {
+    const content = generateHtml(true);
+    navigator.clipboard.writeText(content).then(() => {
+        alert("Código HTML copiado para a área de transferência!");
+    }).catch(err => {
+        alert("Erro ao copiar.");
+    });
 }
