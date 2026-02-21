@@ -392,3 +392,11 @@ function exportHtml() {
         alert("Erro ao copiar.");
     });
 }
+
+function clearAllBlocks() {
+    if (!confirm("Tem certeza que deseja apagar TODOS os blocos? Isso não pode ser desfeito.")) {
+        return;
+    }
+    document.getElementById('input-container').innerHTML = '';
+    updatePreview();
+}
