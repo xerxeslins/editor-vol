@@ -1,6 +1,39 @@
 const inputContainer = document.getElementById('input-container');
 const previewOutput = document.getElementById('preview-output');
 
+// --- DELEGAÇÃO DE EVENTOS ---
+document.addEventListener('click', function(e) {
+    let target = e.target.closest('button, .close-btn');
+    if (!target) return;
+
+    let action = target.dataset.action;
+    if (action === 'changeView') changeView(target.dataset.mode);
+    else if (action === 'toggleHelp') toggleHelp();
+    else if (action === 'addBlock') addBlock(target.dataset.type);
+    else if (action === 'exportHtml') exportHtml();
+    else if (action === 'clearAllBlocks') clearAllBlocks();
+    else if (action === 'moveBlock') moveBlock(target, parseInt(target.dataset.dir));
+    else if (action === 'duplicateBlock') duplicateBlock(target);
+    else if (action === 'removeBlock') removeBlock(target);
+});
+
+document.addEventListener('mousedown', function(e) {
+    let target = e.target.closest('.btn-tool');
+    if (!target) return;
+
+    e.preventDefault();
+    let action = target.dataset.action;
+    if (action === 'applyFormat') applyFormat(target.dataset.format, e);
+    else if (action === 'insertSymbol') insertSymbol(target.dataset.symbol, e);
+});
+
+document.addEventListener('input', function(e) {
+    if (e.target.classList.contains('simple-input') || e.target.classList.contains('editable-box')) {
+        updatePreview();
+    }
+});
+
+// --- CACHE LOCALSTORAGE (VERSÃO WEB) ---
 window.addEventListener('DOMContentLoaded', () => {
     const saved = localStorage.getItem('editorVolBlocks');
     if (saved) {
@@ -27,6 +60,7 @@ function saveToLocal() {
     localStorage.setItem('editorVolBlocks', JSON.stringify(blocks));
 }
 
+// --- CONTROLE DE VISUALIZAÇÃO ---
 function changeView(mode) {
     const editorSide = document.querySelector('.editor-side');
     const previewSide = document.querySelector('.preview-side');
@@ -58,41 +92,50 @@ window.onclick = function(event) {
     if (modal && event.target == modal) modal.style.display = "none";
 }
 
+function clearAllBlocks() {
+    if (!confirm("Tem certeza que deseja apagar TODOS os blocos? Isso não pode ser desfeito.")) {
+        return;
+    }
+    document.getElementById('input-container').innerHTML = '';
+    updatePreview();
+}
+
+// --- FUNÇÕES DE BLOCOS ---
 function addBlock(type, initialContent = "") {
     const div = document.createElement('div');
     div.className = 'block-input';
     div.dataset.type = type;
 
     let headerHtml = `<div class="block-header">
-    <strong>${type.toUpperCase()}</strong>
+    <strong>${type.toUpperCase().replace('-', ' ')}</strong>
     <div class="header-controls">
-    <button class="btn-control" onclick="moveBlock(this, -1)">Subir</button>
-    <button class="btn-control" onclick="moveBlock(this, 1)">Descer</button>
-    <button class="btn-control" onclick="duplicateBlock(this)" title="Duplicar">📄</button>
-    <button class="btn-remove" onclick="removeBlock(this)" title="Remover">X</button>
+    <button class="btn-control" data-action="moveBlock" data-dir="-1">Subir</button>
+    <button class="btn-control" data-action="moveBlock" data-dir="1">Descer</button>
+    <button class="btn-control" data-action="duplicateBlock" title="Duplicar">📄</button>
+    <button class="btn-remove" data-action="removeBlock" title="Remover">X</button>
     </div>
     </div>`;
 
     let toolsHtml = '';
 
-    if (['texto', 'lista', 'citacao'].includes(type)) {
+    if (['texto', 'lista', 'lista-num', 'citacao'].includes(type)) {
         toolsHtml = `<div class="tools">
-        <button class="btn-tool" onmousedown="applyFormat('bold', event)" title="Negrito (Ctrl+B)"><b>B</b></button>
-        <button class="btn-tool" onmousedown="applyFormat('italic', event)" title="Itálico (Ctrl+I)"><i>I</i></button>
-        <button class="btn-tool" onmousedown="applyFormat('strikeThrough', event)" title="Tachado (Ctrl+D)"><s>S</s></button>
-        <button class="btn-tool" onmousedown="applyFormat('kbd', event)" title="Tecla (Ctrl+K)">⌨</button>
-        <button class="btn-tool" onmousedown="applyFormat('emphasis', event)" title="Ênfase (Ctrl+E)">📝</button>
-        <button class="btn-tool" onmousedown="applyFormat('link', event)" title="Link (Ctrl+L)">🔗</button>
-        <button class="btn-tool" onmousedown="applyFormat('clear', event)" title="Limpar Formatação">🧹</button>
+        <button class="btn-tool" data-action="applyFormat" data-format="bold" title="Negrito (Ctrl+B)"><b>B</b></button>
+        <button class="btn-tool" data-action="applyFormat" data-format="italic" title="Itálico (Ctrl+I)"><i>I</i></button>
+        <button class="btn-tool" data-action="applyFormat" data-format="strikeThrough" title="Tachado (Ctrl+D)"><s>S</s></button>
+        <button class="btn-tool" data-action="applyFormat" data-format="kbd" title="Tecla (Ctrl+K)">⌨</button>
+        <button class="btn-tool" data-action="applyFormat" data-format="emphasis" title="Ênfase (Ctrl+E)">📝</button>
+        <button class="btn-tool" data-action="applyFormat" data-format="link" title="Link (Ctrl+L)">🔗</button>
+        <button class="btn-tool" data-action="applyFormat" data-format="clear" title="Limpar Formatação">🧹</button>
         <span style="margin-left:5px; margin-right:5px; color:#ddd">|</span>
-        <button class="btn-tool" onmousedown="insertSymbol('&larr;', event)" title="Seta para Esquerda">←</button>
-        <button class="btn-tool" onmousedown="insertSymbol('&uarr;', event)" title="Seta para Cima">↑</button>
-        <button class="btn-tool" onmousedown="insertSymbol('&darr;', event)" title="Seta para Baixo">↓</button>
-        <button class="btn-tool" onmousedown="insertSymbol('&rarr;', event)" title="Seta para Direita">→</button>
+        <button class="btn-tool" data-action="insertSymbol" data-symbol="&larr;" title="Seta para Esquerda">←</button>
+        <button class="btn-tool" data-action="insertSymbol" data-symbol="&uarr;" title="Seta para Cima">↑</button>
+        <button class="btn-tool" data-action="insertSymbol" data-symbol="&darr;" title="Seta para Baixo">↓</button>
+        <button class="btn-tool" data-action="insertSymbol" data-symbol="&rarr;" title="Seta para Direita">→</button>
         </div>`;
     } else if (type === 'comando') {
         toolsHtml = `<div class="tools">
-        <button class="btn-tool" onmousedown="applyFormat('link', event)" title="Link (Ctrl+L)">🔗 Link</button>
+        <button class="btn-tool" data-action="applyFormat" data-format="link" title="Link (Ctrl+L)">🔗 Link</button>
         </div>`;
     }
 
@@ -104,36 +147,36 @@ function addBlock(type, initialContent = "") {
     if (type === 'comando') {
         contentStyle = "font-family: monospace; background-color: #f8f8f8;";
         placeholder = "Digite o comando aqui...";
-        inputHtml = `<div class="editable-box" contenteditable="true" style="${contentStyle}" oninput="updatePreview()" data-placeholder="${placeholder}"></div>`;
+        inputHtml = `<div class="editable-box" contenteditable="true" style="${contentStyle}" data-placeholder="${placeholder}"></div>`;
     } else if (type === 'saida-comando') {
         contentStyle = "font-family: monospace; background-color: #f8f8f8;";
         placeholder = "Cole a saída do terminal aqui...";
-        inputHtml = `<div class="editable-box" contenteditable="true" style="${contentStyle}" oninput="updatePreview()" data-placeholder="${placeholder}"></div>`;
+        inputHtml = `<div class="editable-box" contenteditable="true" style="${contentStyle}" data-placeholder="${placeholder}"></div>`;
     } else if (type === 'configuracao') {
         extraClass = "code-block-style";
         contentStyle = "background-color: #f4f4f4; color: #333; border: 1px solid #ccc;";
         placeholder = "Cole o conteúdo do arquivo de configuração (.conf, .ini, etc)...";
-        inputHtml = `<div class="editable-box ${extraClass}" contenteditable="true" style="${contentStyle}" oninput="updatePreview()" data-placeholder="${placeholder}"></div>`;
+        inputHtml = `<div class="editable-box ${extraClass}" contenteditable="true" style="${contentStyle}" data-placeholder="${placeholder}"></div>`;
     } else if (type === 'codigo') {
         extraClass = "code-block-style";
         placeholder = "Cole seu código fonte aqui (scripts, C, Python, etc)...";
-        inputHtml = `<div class="editable-box ${extraClass}" contenteditable="true" style="${contentStyle}" oninput="updatePreview()" data-placeholder="${placeholder}"></div>`;
-    } else if (type === 'lista') {
+        inputHtml = `<div class="editable-box ${extraClass}" contenteditable="true" style="${contentStyle}" data-placeholder="${placeholder}"></div>`;
+    } else if (type === 'lista' || type === 'lista-num') {
         placeholder = "Digite o item 1\nDigite o item 2...";
-        inputHtml = `<div class="editable-box" contenteditable="true" oninput="updatePreview()" data-placeholder="${placeholder}"></div>`;
+        inputHtml = `<div class="editable-box" contenteditable="true" data-placeholder="${placeholder}"></div>`;
     } else if (type === 'texto') {
         placeholder = "Escreva seus parágrafos aqui. Use Ctrl+B para negrito, etc.";
-        inputHtml = `<div class="editable-box" contenteditable="true" oninput="updatePreview()" data-placeholder="${placeholder}"></div>`;
+        inputHtml = `<div class="editable-box" contenteditable="true" data-placeholder="${placeholder}"></div>`;
     } else if (type === 'citacao') {
         contentStyle = "border-left: 4px solid #ccc; padding-left: 10px; font-style: italic; color: #555; background-color: #fcfcfc;";
         placeholder = "Digite a citação aqui. Use Ctrl+B para negrito, etc.";
-        inputHtml = `<div class="editable-box" contenteditable="true" style="${contentStyle}" oninput="updatePreview()" data-placeholder="${placeholder}"></div>`;
+        inputHtml = `<div class="editable-box" contenteditable="true" style="${contentStyle}" data-placeholder="${placeholder}"></div>`;
     } else if (type === 'youtube') {
-        inputHtml = `<input type="text" class="simple-input" style="width:100%; padding:8px;" oninput="updatePreview()" placeholder="Cole o link do YouTube...">`;
+        inputHtml = `<input type="text" class="simple-input" style="width:100%; padding:8px;" placeholder="Cole o link do YouTube...">`;
     } else if (type === 'imagem') {
-        inputHtml = `<input type="text" class="simple-input" style="width:100%; padding:8px;" oninput="updatePreview()" placeholder="Nome do arquivo da imagem...">`;
+        inputHtml = `<input type="text" class="simple-input" style="width:100%; padding:8px;" placeholder="Nome do arquivo da imagem...">`;
     } else if (type === 'titulo') {
-        inputHtml = `<input type="text" class="simple-input" style="width:100%; padding:8px; font-size:1.2em; font-weight:bold" oninput="updatePreview()" placeholder="Digite o título...">`;
+        inputHtml = `<input type="text" class="simple-input" style="width:100%; padding:8px; font-size:1.2em; font-weight:bold" placeholder="Digite o título...">`;
     }
 
     div.innerHTML = headerHtml + toolsHtml + inputHtml;
@@ -145,6 +188,10 @@ function addBlock(type, initialContent = "") {
         const editableBox = div.querySelector('.editable-box');
         if (simpleInput) simpleInput.value = initialContent;
         if (editableBox) editableBox.innerHTML = initialContent;
+    }
+
+    if (!initialContent) {
+        div.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 }
 
@@ -178,17 +225,11 @@ function setupEvents(blockElement) {
 }
 
 function insertSymbol(symbol, event) {
-    if (event) event.preventDefault();
     document.execCommand('insertHTML', false, symbol);
     updatePreview();
 }
 
 function applyFormat(formatType, event) {
-
-    if (event && event.type === 'mousedown') {
-        event.preventDefault();
-    }
-
     const selection = window.getSelection();
     if (!selection.rangeCount) return;
 
@@ -216,7 +257,6 @@ function applyFormat(formatType, event) {
     };
 
     if (nativeFormats[formatType]) {
-
         document.execCommand(nativeFormats[formatType], false, null);
 
         const newRange = selection.getRangeAt(0);
@@ -225,7 +265,6 @@ function applyFormat(formatType, event) {
         selection.addRange(newRange);
 
         document.execCommand(nativeFormats[formatType], false, null);
-
         updatePreview();
         return;
     }
@@ -234,15 +273,12 @@ function applyFormat(formatType, event) {
         const url = prompt("Insira a URL:");
         if (url) {
             document.execCommand('createLink', false, url);
-
             const newRange = selection.getRangeAt(0);
             newRange.collapse(false);
             selection.removeAllRanges();
             selection.addRange(newRange);
-
             document.execCommand('unlink', false, null);
         }
-
         updatePreview();
         return;
     }
@@ -324,14 +360,21 @@ function generateHtml(isExport) {
                 html += `<h1>${content}</h1>${codeBreak}`;
             } else if (type === 'texto') {
                 const nextBlock = blocks[index + 1];
-                const isNextList = nextBlock && nextBlock.dataset.type === 'lista';
+                const isNextList = (nextBlock && (nextBlock.dataset.type === 'lista' || nextBlock.dataset.type === 'lista-num'));
                 if (isNextList) {
                     html += `${content}${codeBreak}`;
                 } else {
                     html += `${content}<br/><br/>${codeBreak}`;
                 }
             } else if (type === 'citacao') {
-                html += `<blockquote>${content}</blockquote><br/>${codeBreak}`;
+                let prefix = "";
+                if (index > 0) {
+                    let strippedHtml = html.trimEnd();
+                    if (!strippedHtml.endsWith('<br/>') && !strippedHtml.endsWith('<br>')) {
+                        prefix = "<br/><br/>";
+                    }
+                }
+                html += `${prefix}<blockquote>${content}</blockquote><br/>${codeBreak}`;
             } else if (type === 'comando') {
                 html += `<div class="destaque" style="background-color: #f0f8ff; padding: 10px; border-radius: 4px; font-family: monospace; white-space: pre-wrap; border: 1px solid #ddd; margin: 5px 0; font-weight: bold;">${content}</div><br/>${codeBreak}`;
             } else if (type === 'saida-comando') {
@@ -341,7 +384,7 @@ function generateHtml(isExport) {
             } else if (type === 'codigo') {
                 let cleanCode = content.replace(/<br\s*\/?>/gi, '\n');
                 html += `<pre class="prettyprint">${cleanCode}</pre><br/>${codeBreak}`;
-            } else if (type === 'lista') {
+            } else if (type === 'lista' || type === 'lista-num') {
                 let listContent = content.replace(/<br\s*\/?>/gi, '\n');
                 const items = listContent.split('\n');
                 let listItemsHtml = "";
@@ -349,7 +392,10 @@ function generateHtml(isExport) {
                     let cleanItem = item.trim();
                     if (cleanItem !== "") listItemsHtml += `<li>${cleanItem}</li>`;
                 });
-                if (listItemsHtml) html += `<ul>${listItemsHtml}</ul><br/>${codeBreak}`;
+                if (listItemsHtml) {
+                    const tag = (type === 'lista') ? 'ul' : 'ol';
+                    html += `<${tag}>${listItemsHtml}</${tag}><br/>${codeBreak}`;
+                }
             } else if (type === 'youtube') {
                 const videoId = getYoutubeId(content);
                 if (videoId) {
@@ -374,9 +420,15 @@ function generateHtml(isExport) {
     });
 
     if (isExport) {
-        return `<div>${isExport ? "\n\n" : "\n"}${html}</div>`;
+        return html.trim();
     }
     return html;
+}
+
+function getYoutubeId(url) {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
 }
 
 function updatePreview() {
@@ -391,12 +443,4 @@ function exportHtml() {
     }).catch(err => {
         alert("Erro ao copiar.");
     });
-}
-
-function clearAllBlocks() {
-    if (!confirm("Tem certeza que deseja apagar TODOS os blocos? Isso não pode ser desfeito.")) {
-        return;
-    }
-    document.getElementById('input-container').innerHTML = '';
-    updatePreview();
 }

@@ -10,25 +10,22 @@
 
 <div class="header-main">
     <div>
-        <h2>Editor VOL <span class="version-tag">BETA</span></h2>
+        <h2>Editor VOL <span class="version-tag">WEB</span></h2>
         <p class="subtitle">Assistente de criação de conteúdo.</p>
     </div>
 
     <div style="display: flex; align-items: center;">
         <div class="view-controls">
-            <button id="btn-editor" class="btn-view" onclick="changeView('editor')" title="Apenas Editor">Editor</button>
-            <button id="btn-split" class="btn-view active" onclick="changeView('split')" title="Dividido">Dividido</button>
-            <button id="btn-preview" class="btn-view" onclick="changeView('preview')" title="Apenas Visualização">Visual</button>
+            <button id="btn-editor" class="btn-view" data-action="changeView" data-mode="editor" title="Apenas Editor">Editor</button>
+            <button id="btn-split" class="btn-view active" data-action="changeView" data-mode="split" title="Dividido">Dividido</button>
+            <button id="btn-preview" class="btn-view" data-action="changeView" data-mode="preview" title="Apenas Visualização">Visual</button>
         </div>
 
         <div style="border-left: 1px solid #ddd; height: 30px; margin: 0 10px;"></div>
 
-        <button onclick="clearAllBlocks()" style="background-color: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; margin-right: 15px; font-weight: bold; font-size: 12px;" title="Apagar todos os blocos">Limpar Tudo</button>
+        <button data-action="clearAllBlocks" style="background-color: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; margin-right: 15px; font-weight: bold; font-size: 12px;" title="Apagar todos os blocos">Limpar Tudo</button>
 
-        <label class="checkbox-container">
-            <input type="checkbox" id="confirm-delete"> Confirmar exclusão
-        </label>
-        <button class="btn-help" onclick="toggleHelp()">?</button>
+        <button class="btn-help" data-action="toggleHelp">?</button>
     </div>
 </div>
 
@@ -37,17 +34,18 @@
         <div id="input-container"></div>
 
         <div class="toolbar">
-            <button onclick="addBlock('titulo')">+ Título</button>
-            <button onclick="addBlock('texto')">+ Texto</button>
-            <button onclick="addBlock('citacao')">+ Citação</button>
-            <button onclick="addBlock('lista')">+ Lista</button>
-            <button onclick="addBlock('comando')">+ Comando</button>
-            <button onclick="addBlock('saida-comando')">+ Saída Cmd</button>
-            <button onclick="addBlock('configuracao')" style="color: #555; border-color: #999;">+ Config</button>
-            <button onclick="addBlock('codigo')">+ Código</button>
-            <button onclick="addBlock('youtube')" style="color: #cc0000;">+ Vídeo</button>
-            <button onclick="addBlock('imagem')" style="color: #e67e22;">+ Imagem</button>
-            <button onclick="exportHtml()" class="btn-export">Exportar HTML</button>
+            <button data-action="addBlock" data-type="titulo">+ Título</button>
+            <button data-action="addBlock" data-type="texto">+ Texto</button>
+            <button data-action="addBlock" data-type="citacao">+ Citação</button>
+            <button data-action="addBlock" data-type="lista">+ Lista</button>
+            <button data-action="addBlock" data-type="lista-num">+ Lista Num</button>
+            <button data-action="addBlock" data-type="comando">+ Comando</button>
+            <button data-action="addBlock" data-type="saida-comando">+ Saída Cmd</button>
+            <button data-action="addBlock" data-type="configuracao" style="color: #555; border-color: #999;">+ Config</button>
+            <button data-action="addBlock" data-type="codigo">+ Código</button>
+            <button data-action="addBlock" data-type="youtube" style="color: #cc0000;">+ Vídeo</button>
+            <button data-action="addBlock" data-type="imagem" style="color: #e67e22;">+ Imagem</button>
+            <button data-action="exportHtml" class="btn-export">Exportar HTML</button>
         </div>
     </div>
 
@@ -58,12 +56,11 @@
 
 <div id="help-modal" class="modal">
     <div class="modal-content">
-        <span class="close-btn" onclick="toggleHelp()">&times;</span>
+        <span class="close-btn" data-action="toggleHelp">&times;</span>
         <h3>Guia de Uso</h3>
-        <p><strong>Ajudante do criador de conteúdo para Viva o Linux.</strong><br>
-        <em>Versão Beta. Serve para ajudar a criar dicas ou páginas de artigos.</em></p>
+        <p><strong>Ajudante do criador de conteúdo para Viva o Linux.</strong></p>
         <hr>
-        <h4>Atalhos de Teclado (na caixa de texto):</h4>
+        <h4>Atalhos de Teclado:</h4>
         <ul>
             <li><strong>Ctrl + B:</strong> Negrito</li>
             <li><strong>Ctrl + I:</strong> Itálico</li>
@@ -77,15 +74,14 @@
         <ul>
             <li><strong>Título:</strong> Cria um título principal.</li>
             <li><strong>Texto:</strong> Parágrafos comuns.</li>
-            <li><strong>Citação:</strong> Cria bloco de citação (blockquote).</li>
-            <li><strong>Lista:</strong> Cria lista com marcadores.</li>
+            <li><strong>Citação:</strong> Cria bloco de citação.</li>
+            <li><strong>Lista:</strong> Cria lista com marcadores (bolinhas).</li>
+            <li><strong>Lista Num:</strong> Cria lista ordenada (1, 2, 3...).</li>
             <li><strong>Comando:</strong> Destaque visual azulado.</li>
             <li><strong>Saída Cmd:</strong> Caixa branca para retorno do terminal.</li>
-            <li><strong>Configuração:</strong> Para arquivos <code>.conf</code>, <code>.ini</code>, etc (Fundo claro).</li>
-            <li><strong>Código:</strong> Bloco escuro para scripts e códigos fontes.</li>
-            <li><strong>Vídeo / Imagem:</strong> Placeholders para multimídia.</li>
+            <li><strong>Configuração:</strong> Para arquivos <code>.conf</code>, <code>.ini</code>, etc.</li>
+            <li><strong>Código:</strong> Bloco escuro para scripts.</li>
         </ul>
-        <p><em>Use os botões de visualização no topo para alternar entre Editor, Dividido e Visualização.</em></p>
     </div>
 </div>
 
